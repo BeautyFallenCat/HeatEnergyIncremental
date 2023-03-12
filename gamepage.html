@@ -1,0 +1,938 @@
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heat Energy Incremental</title>
+    <style>
+*{
+    text-align: center;
+    transition-duration: 0.5s;
+    font-family: 'Bahnschrift';
+  color: #FFFFFF;
+}
+.upgCol:has(div .vers) {
+    width: 90%;
+    background: var(--changelogBackground);
+    border-radius: 8px;
+    margin-bottom: 50px;
+}
+
+.upgCol:has(div .vers)>div:has(span>div) {
+    padding: 10px 10px 0 10px;
+}
+
+.upgCol:has(div .vers)>div>span>div {
+    background: var(--changelogColor);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.upgCol:has(div .vers)>div>span>div:has(h2) {
+    background: var(--changelogColor);
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+}
+
+.versions {
+    margin: 10px;
+}
+
+.vers {
+    margin-bottom: 10px;
+}
+
+.vers:only-of-type {
+    margin-bottom: 0;
+}
+
+.vers>div {
+    background: var(--changelogColor);
+    border-radius: 8px 8px 0 0;
+    padding: 10px;
+}
+
+details {
+    margin: 0;
+    background-color: #474747;
+    border-radius: 0 0 8px 8px;
+}
+
+details:not([open]):last-of-type>summary {
+    border-radius: 0 0 8px 8px;
+}
+
+details>summary {
+    cursor: pointer;
+    padding: 10px;
+    text-align: left;
+    background: var(--changelogLight);
+}
+
+ul {
+    padding: 5px 5px 5px 15px;
+    background-color: #414141;
+    list-style: inside;
+}
+
+ul:first-of-type {
+    margin-bottom: 0;
+    padding-bottom: 2px;
+}
+
+ul:last-of-type {
+    margin-top: 0;
+    padding-top: 2px;
+}
+
+ul:only-of-type {
+    padding: 5px 5px 5px 15px;
+}
+
+*:last-of-type>ul:last-of-type {
+    border-radius: 0 0 8px 8px;
+}
+
+ul>li {
+    margin: 8px 0;
+    right: 0px;
+    list-style-position: inside;
+    text-align: left;
+}
+
+ul>li::before {
+    padding: 6px 8px;
+    margin-right: 8px;
+}
+
+ul>li:first-of-type {
+    margin: 8px 0 6px 0;
+}
+
+ul>li:first-of-type::before {
+    border-radius: 4px 4px 0 0;
+    padding: 2px 8px 6px 8px;
+}
+
+ul>li:last-of-type {
+    margin: 6px 0 8px 0;
+}
+
+ul>li:last-of-type::before {
+    border-radius: 0 0 4px 4px;
+    padding: 6px 8px 2px 8px;
+}
+
+
+ul>li:only-of-type {
+    margin: 8px 0;
+}
+
+ul>li:only-of-type::before {
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+
+li>a:hover {
+    text-shadow: 0 0 5px white;
+}
+
+li.Endgame::before {
+    content: "Endgame";
+    background: #fffc61;
+    color: #171717;
+}
+
+li.Added::before {
+    content: "Added";
+    background: #7eed5c;
+    color: #171717;
+}
+
+li.Changed::before {
+    content: "Changed";
+    background: #f7922d;
+    color: #171717;
+}
+
+li.Removed::before {
+    content: "Removed";
+    background: #f7634f;
+    color: #171717;
+}
+
+li.Fixed::before {
+    content: "Fixed";
+    background: #31eb63;
+    color: #171717;
+}
+#outerNews {
+	display: inline-block;
+	height: 25px;
+	width: 700px;
+	background-color: white;
+	color: black;
+	border-top: 4px solid #888888;
+	border-bottom: 4px solid #888888;
+	text-align: left;
+	z-index: -1;
+	padding: 0 0 0 0;
+}
+
+#innerNews {
+	position: relative;
+	z-index: 0;
+	font-size: 16px;
+    color: #000000;
+}
+
+.newsBufferL {
+	position: relative;
+	height: 33px;
+	width: 100000px;
+	background-color: black;
+	border-right: 4px solid #888888;
+	z-index: 100000000;
+	padding: 0 0 0 0;
+}
+
+.newsBufferR {
+	position: relative;
+	height: 33px;
+	width: 100000px;
+	background-color: black;
+	border-left: 4px solid #888888;
+	z-index: 100000000;
+	padding: 0 0 0 0;
+}
+html, body, #app {
+	overflow-x: hidden;
+	min-height: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+table, tr, .table {
+    display: flex;
+    justify-content: center;
+}
+
+table {
+	flex-flow: column wrap;
+}
+
+body
+{
+  background-color: #000000;
+}
+.tabbtn {
+    height: 40px;
+    width: 100px;
+    font-size: 1.1em;
+    border: 2px solid white;
+    font-weight: bold;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+.subtabbtn {
+    height: 25px;
+    width: 70px;
+    font-size: 0.6em;
+    border: 1px solid white;
+    font-weight: bold;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+.scfont1 {
+  color: #ff0000;
+  text-shadow: 0.166667em 0.166667em 0.3333333em rgb(171, 47, 47), 0.3333333em 0.3333333em 0.66666667em rgba(255, 92, 92, 0.986);
+    font-size: 1.6em;
+}
+.scfont2 {
+  color: orange;
+  text-shadow: 0.166667em 0.166667em 0.3333333em rgb(194, 117, 0), 0.3333333em 0.3333333em 0.66666667em rgba(255, 162, 0, 0.986);
+    font-size: 1em;
+}
+.scfont3 {
+  color: yellow;
+  text-shadow: 0.166667em 0.166667em 0.3333333em rgb(255, 246, 80), 0.3333333em 0.3333333em 0.66666667em rgba(196, 193, 0, 0.986);
+    font-size: 1em;
+}
+.scfont4 {
+  color: white;
+  text-shadow: 0.166667em 0.166667em 0.3333333em rgb(255, 255, 255), 0.3333333em 0.3333333em 0.66666667em rgba(207, 207, 207, 0.986);
+    font-size: 1em;
+}
+.scfont5 {
+  color: Lightskyblue;
+  text-shadow: 0.166667em 0.166667em 0.3333333em rgb(102, 133, 152), 0.3333333em 0.3333333em 0.66666667em rgb(63, 141, 189);
+    font-size: 1em;
+}
+.scfont6 {
+  color:Deepskyblue;
+  text-shadow: 0.166667em 0.166667em 0.3333333em rgb(0, 148, 197), 0.3333333em 0.3333333em 0.66666667em rgb(66, 208, 255);
+    font-size: 1em;
+}
+.thoughtfont {
+  color: #31aeb0;
+    text-shadow: 0.166667em 0.166667em 0.3333333em rgb(47, 115, 171), 0.3333333em 0.3333333em 0.66666667em rgb(62, 5, 85);
+    font-size: 1.6em;
+}
+.thoughtfontsml {
+  color: #31aeb0;
+    text-shadow: 0.166667em 0.166667em 0.3333333em rgb(47, 115, 171), 0.3333333em 0.3333333em 0.66666667em rgb(62, 5, 85);
+    font-size: 1.6em;
+}
+.pthoughtfont {
+  color: #654730;
+    text-shadow: 0.166667em 0.166667em 0.3333333em rgb(67, 50, 81), 0.3333333em 0.3333333em 0.66666667em rgb(69, 24, 0);
+    font-size: 1.6em;
+}
+.stonefont {
+  color: #4f4f4f;
+    text-shadow: 0.166667em 0.166667em 0.3333333em rgb(106, 106, 106), 0.3333333em 0.3333333em 0.66666667em rgb(103, 103, 103);
+    font-size: 1.6em;
+}
+.ethoughtfont {
+  color: #a3d9a5;
+    text-shadow: 0.166667em 0.166667em 0.3333333em rgb(30, 255, 0), 0.3333333em 0.3333333em 0.66666667em rgb(0, 255, 183);
+    font-size: 1.6em;
+}
+.desc {
+    color: rgb(255, 255, 255);
+    font-size: 1.2em;
+    text-shadow: 0.166667em 0.166667em 0.3333333em rgb(133, 133, 133), 0.3333333em 0.3333333em 0.66666667em rgb(255, 255, 255);
+}
+.selected {
+  border-bottom: 4px solid #FFFFFF;
+}
+.optionSelection {
+    color: rgb(255, 255, 255);
+    background-color: #000000;
+    border: 2px solid #ffffff;
+    width: 75px;
+    height: 75px;
+    margin-left: 3px;
+    margin-right: 3px;
+    padding: 5px;
+    cursor: pointer;
+}
+.optionSelection:hover {
+    color: rgb(255, 255, 255);
+    background-color: #454545;
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.optionSelection:active {
+    color: rgb(255, 255, 255);
+    background-color: #656565;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+@keyframes en {
+	0% {
+		background-position: 0% 0%;
+	}
+	50% {
+		background-position: 100% 0%;
+	}
+	100% {
+		background-position: 200% 0%;
+	}
+}
+.en1 {
+    color: white;
+    background: #000000;
+    border: 2px solid #ff0000;
+    width: 180px;
+    height: 180px;
+    margin-left: 0px;
+    border-radius: 10px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.en1:hover{
+    color: black;
+    background: repeating-linear-gradient(135deg, rgb(0, 0, 0) 20%, rgb(255, 0, 0)  15%, rgb(0, 0, 0) 30%);
+    background-position: 0% 0%;
+	background-size: 250% 250%;
+    border: 2px solid #ff0000;
+    padding: 5px 5px 5px 5px;
+    filter: brightness(120%);
+    scale: 105%;
+    cursor: pointer;
+    animation: en 2s linear infinite;
+}
+.en2 {
+    color: white;
+    background: #000000;
+    border: 2px solid orange;
+    width: 180px;
+    border-radius: 10px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.en2:hover{
+    color: black;
+    background: repeating-linear-gradient(135deg, rgb(0, 0, 0) 20%, orange 15%, rgb(0, 0, 0) 30%);
+    background-position: 0% 0%;
+	background-size: 250% 250%;
+    border: 2px solid orange;
+    padding: 5px 5px 5px 5px;
+    filter: brightness(120%);
+    scale: 105%;
+    cursor: pointer;
+    animation: en 2s linear infinite;
+}
+.en3 {
+    color: black;
+    background: #000000;
+    border: 2px solid yellow;
+    width: 180px;
+    border-radius: 10px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.en3:hover{
+    color: black;
+    background: repeating-linear-gradient(135deg, rgb(0, 0, 0) 20%, yellow 15%, rgb(0, 0, 0) 30%);
+    background-position: 0% 0%;
+	background-size: 250% 250%;
+    border: 2px solid yellow;
+    padding: 5px 5px 5px 5px;
+    filter: brightness(120%);
+    scale: 105%;
+    cursor: pointer;
+    animation: en 2s linear infinite;
+}
+.en4 {
+    color: black;
+    background: #000000;
+    border: 2px solid rgb(255, 255, 255);
+    width: 180px;
+    border-radius: 10px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.en4:hover{
+    color: black;
+    background: repeating-linear-gradient(135deg, rgb(0, 0, 0) 20%, rgb(255, 255, 255) 15%, rgb(0, 0, 0) 30%);
+    background-position: 0% 0%;
+	background-size: 250% 250%;
+    border: 2px solid rgb(255, 255, 255);
+    padding: 5px 5px 5px 5px;
+    filter: brightness(120%);
+    scale: 105%;
+    cursor: pointer;
+    animation: en 2s linear infinite;
+}
+.en5 {
+    color: black;
+    background: #000000;
+    border: 2px solid lightskyblue;
+    width: 180px;
+    border-radius: 10px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.en5:hover{
+    color: black;
+    background: repeating-linear-gradient(135deg, rgb(0, 0, 0) 20%, lightskyblue 15%, rgb(0, 0, 0) 30%);
+    background-position: 0% 0%;
+	background-size: 250% 250%;
+    border: 2px solid lightskyblue;
+    padding: 5px 5px 5px 5px;
+    filter: brightness(120%);
+    scale: 105%;
+    cursor: pointer;
+    animation: en 2s linear infinite;
+}
+.en6 {
+    color: black;
+    background: #000000;
+    border: 2px solid deepskyblue;
+    width: 180px;
+    border-radius: 10px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.en6:hover{
+    color: black;
+    background: repeating-linear-gradient(135deg, rgb(0, 0, 0) 20%, deepskyblue 15%, rgb(0, 0, 0) 30%);
+    background-position: 0% 0%;
+	background-size: 250% 250%;
+    border: 2px solid deepskyblue;
+    padding: 5px 5px 5px 5px;
+    filter: brightness(120%);
+    scale: 105%;
+    cursor: pointer;
+    animation: en 2s linear infinite;
+}
+.bought {
+    --locked: #a200009f;
+    color: white;
+    background-color: rgb(119,191,95);
+    border: 2px solid white;
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.locked {
+    --locked: #a200009f;
+    color: black;
+    background-color: #888888;
+    border: 2px solid var(--locked);
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.woodUpg.unlocked {
+    color: white;
+    background-color: #000000;
+    border: 2px solid #8A6E2F;
+    box-shadow: 0px 0px 5px 5px inset #8A6E2F;
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    transition-duration: 0.3s;
+    cursor: pointer;
+}
+.woodUpg.unlocked:hover{
+    color: black;
+    background-color: #8A6E2F;
+    box-shadow: 0px 0px 2px 2px #FFFFFF;
+    transition-duration: 0.3s;
+    scale: 105%;
+    cursor: pointer;
+    
+}
+.stoneUpg.unlocked {
+    color: white;
+    background-color: #000000;
+    border: 2px solid #5f5f5f;
+    box-shadow: 0px 0px 5px 5px inset #474747;
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    transition-duration: 0.3s;
+    cursor: pointer;
+}
+.stoneUpg.unlocked:hover{
+    color: black;
+    background-color: #5f5f5f;
+    box-shadow: 0px 0px 2px 2px #FFFFFF;
+    transition-duration: 0.3s;
+    scale: 105%;
+    cursor: pointer;
+    
+}
+.pthoughtUpg.unlocked {
+    color: rgb(255, 255, 255);
+    background-color: #282543;
+    border: 2px solid #6e64c4;
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.pthoughtUpg.unlocked:hover{
+    color: rgb(255, 255, 255);
+    background-color: #373361;
+    border: 2px solid #6e64c4;
+    padding: 5px 5px 5px 5px;
+    filter: brightness(120%);
+    scale: 105%;
+    cursor: pointer;
+}
+.pthoughtUpg.unlocked:active {
+    color: rgb(255, 255, 255);
+    background-color: #443e78;
+    border: 2px solid #6e64c4;
+    filter: brightness(150%);
+    scale: 110%;
+    cursor: pointer;
+}
+.pthoughtUpg.locked {
+    color: rgb(255, 255, 255);
+    background-color: rgb(62, 34, 123);
+    border: 2px solid rgba(0, 0, 0, 0.501);
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: not-allowed;
+}
+.smolOuterBar {
+	height: 20px;
+	min-width: 200px;
+	width: 200px;
+	background-color: #fafafa;
+	border-radius: 5px;
+}
+
+.smolInnerBar {
+	height: 20px;
+	background-color: #ff0000;
+    transition-duration: 0.1s;
+	border-radius: 5px;
+}
+.ethoughtUpg.unlocked {
+    color: rgb(255, 255, 255);
+    background-color: #2b4325;
+    border: 2px solid #a3d9a5;
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.ethoughtUpg.unlocked:hover{
+    color: rgb(255, 255, 255);
+    background-color: #4d7444;
+    border: 2px solid #a3d9a5;
+    padding: 5px 5px 5px 5px;
+    filter: brightness(120%);
+    scale: 105%;
+    cursor: pointer;
+}
+.ethoughtUpg.unlocked:active {
+    color: rgb(255, 255, 255);
+    background-color: #659a5a;
+    border: 2px solid #a3d9a5;
+    filter: brightness(150%);
+    scale: 110%;
+    cursor: pointer;
+}
+.ethoughtUpg.locked {
+    color: rgb(255, 255, 255);
+    background-color: rgb(50, 68, 47);
+    border: 2px solid rgba(0, 0, 0, 0.501);
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: not-allowed;
+}
+.thoughtUpg.locked {
+    color: white;
+    background-color: rgb(77, 99, 114);
+    border: 2px solid rgba(0, 0, 0, 0.473);
+    width: 291.5px;
+    height: 180px;
+    margin-left: 0px;
+    margin-right: 5px;
+    padding: 5px 5px 5px 5px;
+    cursor: not-allowed;
+}
+.options {
+    color: white;
+    background-color: black;
+    border: 2px solid #ffffff;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.options:hover {
+    background-color: #acacac;
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.options:active {
+    background-color: #717171;
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+        .fuel {
+    color: white;
+    background: radial-gradient(
+			circle farthest-corner at left top,
+			#38fff8 0%,
+			#2ff5b9 8%,
+			#25769c 30%,
+			#2d226e 40%,
+			transparent 80%
+		),
+		radial-gradient(
+			circle farthest-corner at right bottom,
+			#ffffff 0%,
+			#affaf9 8%,
+			#5dabc7 25%,
+			#171d40 62.5%,
+			#171d40 100%
+		);
+    border: 2px solid #5dabc7;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.fuel:hover {
+    background-color: #acacac;
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.fuel:active {
+    background-color: #717171;
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.material {
+    color: white;
+    background: radial-gradient(
+			ellipse farthest-corner at right bottom,
+			#fedb37 0%,
+			#fdb931 8%,
+			#9f7928 30%,
+			#8a6e2f 40%,
+			transparent 80%
+		),
+		radial-gradient(
+			ellipse farthest-corner at left top,
+			#ffffff 0%,
+			#ffffac 8%,
+			#d1b464 25%,
+			#5d4a1f 62.5%,
+			#5d4a1f 100%
+		);
+    border: 2px solid #d1b464;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.material:hover {
+    background-color: #acacac;
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.material:active {
+    background-color: #717171;
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.changelog {
+    color: white;
+    background-color: black;
+    border: 2px solid #ffffff;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.changelog:hover {
+    background-color: #acacac;
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.changelog:active {
+    background-color: #717171;
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.setting {
+    color: white;
+    background-color: black;
+    border: 2px solid #ffffff;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.setting:hover {
+    background-color: #acacac;
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.setting:active {
+    background-color: #717171;
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.wood,.main {
+    color: white;
+    
+    background: linear-gradient(
+			#685644 0%,
+			#544731 10%,
+			#5e4834 25%,
+			#5d4a1f 62.5%,
+			#5d4a1f 100%
+		);
+    border: 2px solid #8A6E2F;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.wood:hover,.main:hover {
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.wood:active,.main:active {
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.stone,.upgrades,.generator {
+    color: white;
+    
+    background: #444444;
+    border: 2px solid #666666;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.stone:hover,.upgrades:hover,.generator:hover {
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.stone:active,.upgrades:active,.generator:active {
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.Mind_Dipth {
+    color: white;
+    background-color: black;
+    border: 2px solid #6e64c4;
+    padding: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+.Mind_Dipth:hover {
+    background-color: #312d54;
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.Mind_Dipth:active {
+    background-color: #4d4689;
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+.Energy {
+    color: black;
+    background: linear-gradient(90deg, red 15%, orange 30%, yellow 45%, white 60%, Lightskyblue 75%, Deepskyblue 90%, Dodgerblue 100%);
+    border: 2px solid #a3d9a5;
+    cursor: pointer;
+}
+.Energy:hover {
+    filter: brightness(120%);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.Energy:active {
+    transition-duration: 0.25s;
+    filter: brightness(150%);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+   </style>
+    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.12/vue.min.js"></script>
+    <script src="break_eternity.js"></script>
+    <script src="maingame.js"></script>
+    <script src="player.js"></script>
+    <script src="gameloop.js"></script>
+    <script src="wood.js"></script>
+    <script src="stone.js"></script>
+    <script src="v.js"></script>
+    <script src="news.js"></script>
+    <script src="temp.js"></script>
+</head>
+<body onload="loadGame()">
+    <div id="app">
+        <br>
+        <div class = "desc">Your universe currently has <b class="scfont1">{{formatHeat(player.energy)}}</b> of heat energy. (+{{formatHeat(getEnergyGain())}}/sec)</div>
+        <div class = "desc">{{getUnlockText()}}</div><br>
+        <br>
+        <div><table>
+            <tr>
+                <td v-for="(tab, name) in tabs.normal"><button v-if="tabs.normal[name]()" v-on:click="showTab(name,'normal')" v-bind:class="{[name.toLowerCase()]: true, tabbtn: true, selected: tab.normal==this.name}">{{name}}</button></td>
+            </tr>
+        </table></div>
+        <div v-if="tab.normal=='Options'">
+            <button v-bind:class="{optionSelection:true}" onclick="importSave()">Import</button>
+            <button v-bind:class="{optionSelection:true}" onclick="exportSave()">Export</button>
+            <button v-bind:class="{optionSelection:true}" onclick="hardReset()" style="background-color: #FF0000;">Reset</button><br><br>
+          </div>
+        <div v-if="tab.normal=='Wood'"><br>
+            <button v-bind:class="{woodUpg:true,unlocked: player.energy.gte(10),locked: player.energy.lt(10)}" onclick="woodPrestige()" style="height: 126px;width: 260px;font-size: 18px">Put all your energy into the wood creater<br>Gain +{{formatWhole(getWoodGain())}} wood<br></button><br><br>
+            <div class = "desc">You have <b class="pthoughtfont">{{formatWhole(player.wood)}}</b> wood.</div><br>
+            <table>
+                <tr v-for="r in UPG_DATA.rows">
+                    <td v-for="(n,i) in UPG_DATA.rowData[r]"><button style="position: relative; font-size: 13px;" v-bind:style="{visibility: (player.totalwood.gte(UPG_DATA[n].targ())?'visible':'hidden'), opacity: player.totalwood.gte(UPG_DATA[n].targ())?'100%':'0%'}" v-bind:class="{woodUpg:true,unlocked: player.wood.gte(tmp.c[n]), locked: player.wood.lt(tmp.c[n])}" v-on:click="buyUpg(n)"><span class="pthoughtfont" style="position: absolute; top: 0;right: 60px;">Wood Furnace Mk.{{n}}</span><h3 v-bind:style="{'margin-bottom': 0}">{{UPG_DATA[n].title()}}</h4><br>Level:<span class="pthoughtfont">{{formatWhole(player.upgs[n])+(tmp.x[n].gt(0)?(" + "+formatWhole(tmp.x[n])):"")}}</span><br>Currently:<span v-if="UPG_DATA[n].pref!==undefined" v-html="UPG_DATA[n].pref" class="pthoughtfont"></span><span class="pthoughtfont">{{format(tmp.u[n])}}</span><br>Cost: <span class="pthoughtfont">{{formatWhole(tmp.c[n])}}</span> Wood</button></td>
+                </tr>
+            </table>
+        </div>
+        <div v-if="tab.normal=='Stone'"><br>
+            <table>
+                <tr>
+                    <td v-for="(tab, name) in tabs.stone"><button v-if="tabs.stone[name]()" v-on:click="showTab(name,'stone')" v-bind:class="{[name.toLowerCase()]: true, subtabbtn: true, selected: tab.normal==this.name}">{{name}}</button></td>
+                </tr>
+            </table><br>
+            <button v-bind:class="{stoneUpg:true,unlocked: player.energy.gte(4.13e21),locked: player.energy.lt(4.13e21)}" onclick="stonePrestige()" style="height: 126px;width: 260px;font-size: 18px">Put all your energy , wood and wood upgrades into the stone creater<br>Gain +{{formatWhole(getStoneGain())}} stone<br></button><br><br>
+            <div class = "desc">You have <b class="stonefont">{{formatWhole(player.stone)}}</b> stone.</div><br>
+            <div class = "desc">You have created <b class="stonefont">{{formatHeat(player.stoneEng)}}</b> of stone energy, translated to a <b class="pthoughtfont">x{{format(tmp.stone.stoneEff)}}</b> boost to wood gain.</div><br>
+        <br>
+        <div v-if="tab.stone=='Generator'">
+        <table>
+            <tr>
+                <td v-for="(n,i) in UPG2_DATA.rowData[1]"><button style="position: relative; font-size: 13px;" v-bind:style="{visibility: (player.totalstone.gte(UPG2_DATA[n].targ())?'visible':'hidden'), opacity: player.totalstone.gte(UPG2_DATA[n].targ())?'100%':'0%'}" v-bind:class="{stoneUpg:true,unlocked: player.stone.gte(tmp.c2[n]), locked: player.stone.lt(tmp.c2[n])}" v-on:click="buy2Upg(n)"><span class="stonefont" style="position: absolute; top: 0;right: 60px;">Stone Generator Mk.{{n}}</span><h3 v-bind:style="{'margin-bottom': 0}">{{UPG2_DATA[n].title()}}</h4><br>Level:<span class="stonefont">{{formatWhole(player.upg2s[n])+(player.upg2sAmt[n].gte(0)?("("+formatWhole(player.upg2sAmt[n]))+")":"")}}</span><br>Currently:<span class="stonefont">{{format(tmp.u2[n])}}</span><span v-if="UPG2_DATA[n].pref!==undefined" v-html="UPG2_DATA[n].pref" class="stonefont"></span><br>Cost: <span class="stonefont">{{formatWhole(tmp.c2[n])}}</span> Stone</button></td>
+            </tr>
+            <tr>
+                <td v-for="(n,i) in UPG2_DATA.rowData[2]"><button style="position: relative; font-size: 13px;" v-bind:style="{visibility: (player.totalstone.gte(UPG2_DATA[n].targ())?'visible':'hidden'), opacity: player.totalstone.gte(UPG2_DATA[n].targ())?'100%':'0%'}" v-bind:class="{stoneUpg:true,unlocked: player.stone.gte(tmp.c2[n]), locked: player.stone.lt(tmp.c2[n])}" v-on:click="buy2Upg(n)"><span class="stonefont" style="position: absolute; top: 0;right: 70px;">Stone Generator Mk.{{n}}</span><h3 v-bind:style="{'margin-bottom': 0}">{{UPG2_DATA[n].title()}}</h4><br>Level:<span class="stonefont">{{formatWhole(player.upg2s[n])+(player.upg2sAmt[n].gte(0)?("("+formatWhole(player.upg2sAmt[n]))+")":"")}}</span><br>Currently:<span class="stonefont">{{format(tmp.u2[n])}}</span><span v-if="UPG2_DATA[n].pref!==undefined" v-html="UPG2_DATA[n].pref" class="stonefont"></span><br>Cost: <span class="stonefont">{{formatWhole(tmp.c2[n])}}</span> Stone</button></td>
+            </tr>
+        </table>
+    </div>
+    <div v-if="tab.stone=='Upgrades'">
+    <table>
+        <tr>
+            <td v-for="(n,i) in UPG2_DATA.rowData[3]"><button style="position: relative; font-size: 13px;" v-bind:style="{visibility: (player.totalstone.gte(UPG2_DATA[n].targ())?'visible':'hidden'), opacity: player.totalstone.gte(UPG2_DATA[n].targ())?'100%':'0%'}" v-bind:class="{stoneUpg:true,unlocked: player.stoneEng.gte(tmp.c2[n])&&!(formatWhole(player.upg2s[n])==1), locked: player.stoneEng.lt(tmp.c2[n])&&!(formatWhole(player.upg2s[n])==1),bought: formatWhole(player.upg2s[n])==1}" v-on:click="buy2Upg(n)"><span class="stonefont" style="position: absolute; top: 0;right: 70px;">Stone Upgrade {{n}}</span><h3 v-bind:style="{'margin-bottom': 0}">{{UPG2_DATA[n].title()}}</h4><br>Level:<span class="stonefont">{{formatWhole(player.upg2s[n])}}</span><br><span v-if="UPG2_DATA[n].pref!==''">Currently:<span class="stonefont">{{format(tmp.u2[n])}}</span></span><span v-if="UPG2_DATA[n].pref!==undefined" v-html="UPG2_DATA[n].pref" class="stonefont"></span><br>Cost: <span class="stonefont">{{formatHeat(tmp.c2[n])}}</span> Stone Energy</button></td>
+        </tr>
+    </table>
+</div>
+    </div>
+</body>
+</html>
